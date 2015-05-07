@@ -2,3 +2,5 @@
 .idea
 MANIFEST
 dist
+*.log
+*.pcapng

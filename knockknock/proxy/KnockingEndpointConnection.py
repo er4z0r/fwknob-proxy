@@ -8,27 +8,21 @@ from struct import *
 
 class KnockingEndpointConnection(EndpointConnection):
 
-    def __init__(self, shuttle, profile, host, port):
-        self.profile = profile
+    def __init__(self, shuttle, host, port):
         self.host    = host
         self.port    = port
 
-        self.sendKnock(profile, host, port)
+        self.sendKnock(host, port)
         EndpointConnection.__init__(self, shuttle, host, port)
 
     def reconnect(self):
-        self.sendKnock(self.profile, self.host, self.port)
+        self.sendKnock(self.host, self.port)
         EndpointConnection.reconnect(self)
 
-    def sendKnock(self, profile, host, port):
-        port       = pack('!H', int(port))
-        packetData = profile.encrypt(port)
-        knockPort  = profile.getKnockPort()
-        
-        idField, seqField, ackField, winField = unpack('!HIIH', packetData)
+    def sendKnock(self, host, port):
 
-        command = "hping3 -q -S -c 1 -p " + str(knockPort) + " -N " + str(idField) + " -w " + str(winField) + " -M " + str(seqField) + " -L " + str(ackField) + " " + host;
+        command = "fwknop -A tcp/%d -n %s --wget-cmd /usr/local/bin/wget --verbose" % (port,host)
         command = command.split()
-
-        subprocess.call(command, shell=False, stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+        print "Command: %s" % command
+        subprocess.call(command, shell=False, stdout=open("fwknob-proxy.log","w+"), stderr=subprocess.STDOUT)
         time.sleep(0.25)

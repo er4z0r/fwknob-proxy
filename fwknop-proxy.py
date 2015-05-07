@@ -24,16 +24,14 @@ USA
 
 import os, sys, asyncore, socket
 
-from knockknock.Profiles import Profiles
 from knockknock.proxy.SocksRequestHandler import SocksRequestHandler
 
 import knockknock.daemonize
 
 class ProxyServer(asyncore.dispatcher):
 
-    def __init__(self, port, profiles):
+    def __init__(self, port):
         asyncore.dispatcher.__init__(self)
-        self.profiles = profiles
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
         self.bind(("127.0.0.1", port))
@@ -41,24 +39,12 @@ class ProxyServer(asyncore.dispatcher):
 
     def handle_accept(self):
         conn, addr = self.accept()
-        SocksRequestHandler(conn, self.profiles)
+        SocksRequestHandler(conn)
 
 
 def usage():
     print "fwknop-proxy <listenPort>"
     sys.exit(3)
-
-def getProfiles():
-    homedir  = os.path.expanduser('~')
-    profiles = Profiles(homedir + '/.fwknoprc')
-    profiles.resolveNames()
-
-    return profiles
-
-def checkPrivileges():
-    if not os.geteuid() == 0:
-        print "\nSorry, fwknop-proxy has to be run as root.\n"
-        usage()
 
 def checkProfiles():
     homedir = os.path.expanduser('~')
@@ -72,13 +58,11 @@ def main(argv):
     if len(argv) != 1:
         usage()
 
-    checkPrivileges()
     checkProfiles()
 
-    profiles = getProfiles()
-    server   = ProxyServer(int(argv[0]), profiles)
+    server   = ProxyServer(int(argv[0]))
 
-    knockknock.daemonize.createDaemon()
+    #knockknock.daemonize.createDaemon()
 
     asyncore.loop(use_poll=True)
 
