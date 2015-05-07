@@ -45,41 +45,41 @@ class ProxyServer(asyncore.dispatcher):
 
 
 def usage():
-    print "knockknock-proxy <listenPort>"
+    print "fwknop-proxy <listenPort>"
     sys.exit(3)
 
 def getProfiles():
     homedir  = os.path.expanduser('~')
-    profiles = Profiles(homedir + '/.knockknock/')
+    profiles = Profiles(homedir + '/.fwknoprc')
     profiles.resolveNames()
-    
+
     return profiles
 
 def checkPrivileges():
     if not os.geteuid() == 0:
-        print "\nSorry, knockknock-proxy has to be run as root.\n"
+        print "\nSorry, fwknop-proxy has to be run as root.\n"
         usage()
 
 def checkProfiles():
     homedir = os.path.expanduser('~')
 
-    if not os.path.isdir(homedir + '/.knockknock/'):
-        print "Error: you need to setup your profiles in " + homedir + "/.knockknock/"
+    if not os.path.exists(homedir+'/.fwknoprc'):
+        print "Error: you need to setup your profiles in " + homedir + "/.fwknoprc"
         sys.exit(2)
 
 def main(argv):
-    
+
     if len(argv) != 1:
         usage()
-        
+
     checkPrivileges()
     checkProfiles()
 
-    profiles = getProfiles()        
+    profiles = getProfiles()
     server   = ProxyServer(int(argv[0]), profiles)
 
     knockknock.daemonize.createDaemon()
-    
+
     asyncore.loop(use_poll=True)
 
 if __name__ == '__main__':
