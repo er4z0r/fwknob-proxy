@@ -24,9 +24,9 @@ USA
 
 import os, sys, asyncore, socket
 
-from knockknock.proxy.SocksRequestHandler import SocksRequestHandler
+from proxy.SocksRequestHandler import SocksRequestHandler
 
-import knockknock.daemonize
+import proxy.daemonize
 
 class ProxyServer(asyncore.dispatcher):
 
