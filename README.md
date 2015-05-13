@@ -1,13 +1,15 @@
 # fwknob-proxy for convenient usage of portknocking on the client
 
-This project is still in its very early stages (i.e. "works for me") .
+This project is still in its very early stages (i.e. "works for me") . It is a stripped down bastard of Moxie Marlinspike's great [knockknock project](https://github.com/moxie0/knockknock). So 99% of the code was written by him. I simply took his code and ripped out only the proxy part.
+
+## What does it do?
 
 fwknob-proxy is a SOCKS-proxy written in python that allows you to 'knockify'
 applications on the client so you need not always manually send a knock-request before connecting. This can be very hand for applications such as e-mail clients, IRC-clients or even SSH. Basically anything that supports a SOCKS proxy. Even applications that do not directly support SOCKS can still be 'knockified' using a wrapper such as [proxychains-ng](https://github.com/rofl0r/proxychains-ng).
 
-It is a stripped down bastard of Moxie Marlinspike's great [knockknock project](https://github.com/moxie0/knockknock). So 99% of the code was written by him. I simply took his code and ripped out only the proxy part.
 
-## How to use it
+
+## How do you use it?
 * make sure you have the fwknop client installed and configured your ~/.fwknoprc
 * Check KnockingEndpointConnection.py if the path to fwknop suits your environment
 

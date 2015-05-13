@@ -8,11 +8,12 @@ from KnockingEndpointConnection import KnockingEndpointConnection
 
 class SocksRequestHandler(asynchat.async_chat):
 
-    def __init__(self, sock):
+    def __init__(self, sock,profiles):
         asynchat.async_chat.__init__(self, sock=sock)
 
         self.INITIAL_HEADER_LEN = 2
         self.REQUEST_HEADER_LEN = 4
+        self.profiles = profiles
 
         self.input        = []
         self.state        = 0
@@ -52,7 +53,15 @@ class SocksRequestHandler(asynchat.async_chat):
         self.push(response)
 
     def setupEndpoint(self):
-            self.endpoint = KnockingEndpointConnection(self, self.address, self.port)
+        if (self.addressType == 0x01):
+            profile = self.profiles.byIP(self.address)
+        else:
+            profile = self.profiles.byHost(self.address)
+
+        if profile == None:
+            self.endpoint = EndpointConnection(self, self.address, self.port)
+        else:
+            self.endpoint = KnockingEndpointConnection(self, profile, self.address, self.port)
 
 
     def processAddressAndPort(self):

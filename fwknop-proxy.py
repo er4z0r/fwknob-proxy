@@ -25,21 +25,22 @@ USA
 import os, sys, asyncore, socket
 
 from proxy.SocksRequestHandler import SocksRequestHandler
-
+import proxy.Profiles as Profiles
 import proxy.daemonize
 
 class ProxyServer(asyncore.dispatcher):
 
-    def __init__(self, port):
+    def __init__(self, port, profiles):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
         self.bind(("127.0.0.1", port))
         self.listen(5)
+        self.profiles =profiles
 
     def handle_accept(self):
         conn, addr = self.accept()
-        SocksRequestHandler(conn)
+        SocksRequestHandler(conn,self.profiles)
 
 
 def usage():
@@ -48,19 +49,21 @@ def usage():
 
 def checkProfiles():
     homedir = os.path.expanduser('~')
+    profile_path=homedir+'/.fwknoprc'
 
-    if not os.path.exists(homedir+'/.fwknoprc'):
+    if not os.path.exists(profile_path):
         print "Error: you need to setup your profiles in " + homedir + "/.fwknoprc"
         sys.exit(2)
+    return Profiles.fromFile(profile_path)
 
 def main(argv):
 
     if len(argv) != 1:
         usage()
 
-    checkProfiles()
+    profiles = checkProfiles()
 
-    server   = ProxyServer(int(argv[0]))
+    server   = ProxyServer(int(argv[0]),profiles)
 
     #knockknock.daemonize.createDaemon()
 
